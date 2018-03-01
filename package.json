@@ -1,0 +1,70 @@
+{
+  "name": "react-tap-browser",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "(cd example-app && command -v yarn >/dev/null && yarn && npm start || npm install && npm start)",
+    "build": "npm run clean && babel src -d dist --copy-files && BABEL_ENV=es babel src -d es --copy-files && node-sass src/main.scss dist/style.css --output-style compressed && npm run build:browser"
+  },
+  "devDependencies": {
+    "babel-cli": "6.18.0",
+    "babel-eslint": "^7.1.1",
+    "babel-preset-es2015": "6.18.0",
+    "babel-preset-es2017": "^6.24.1",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-stage-0": "^6.16.0",
+    "eslint": "^3.13.1",
+    "eslint-config-uber-es2015": "^3.0.1",
+    "eslint-config-uber-jsx": "^3.0.1",
+    "eslint-plugin-babel": "^4.0.0",
+    "eslint-plugin-react": "^6.9.0",
+    "faucet": "^0.0.1",
+    "react": "^16.2.0",
+    "tape": "4"
+  },
+  "keywords": [
+    "react",
+    "es6",
+    "babel",
+    "tap",
+    "testing"
+  ],
+  "author": {
+    "name": "Andrew McNutt",
+    "url": "mcnutt.in"
+  },
+  "babel": {
+    "env": {
+      "production": {
+        "presets": [
+          "es2015",
+          "stage-0",
+          "react"
+        ]
+      },
+      "development": {
+        "presets": [
+          "es2015",
+          "stage-0",
+          "react"
+        ]
+      },
+      "es": {
+        "presets": [
+          [
+            "es2015",
+            {
+              "modules": false
+            }
+          ],
+          "stage-0",
+          "react"
+        ]
+      }
+    }
+  },
+  "dependencies": {
+    "prop-types": "^15.6.1"
+  }
+}
