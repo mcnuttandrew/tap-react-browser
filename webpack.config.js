@@ -25,7 +25,7 @@ module.exports = {
     new webpack.optimize.UglifyJsPlugin()
   ],
   output: {
-    filename: 'TapReactBrowser.js',
+    filename: './index.js',
     libraryTarget: 'umd',
     publicPath: '/dist/'
   }
