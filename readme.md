@@ -80,15 +80,5 @@ Whether or not to force serial execution on these tests via promises
 
 ## Contributions
 
-Thoughts and PRs are always welcome.
-
-## TODOS
-- broadcast test status into a browser global (so that pupeteer can pick it up)
-- write more docs
-- build a diffing thing
-- figure our peer dep on tape
-- how are fonts imported -> maybe dont?
-- add css classes to everything but style directly
-- add a prop to turn off automatic styling
-
+Thoughts and PRs are always welcome. Make sure any changes you want to add run correctly in the the development enviroment, which is available by running `yarn start`.
 
