@@ -13,16 +13,18 @@ export default class ExampleApp extends Component {
         <TapReactBrowser
           runAsPromises
           tests={[
-            testWithPromise,
+            {name: 'test-with-promise', test: testWithPromise},
             testWithBatchPromise
           ]} />
         {
 
           // <TapReactBrowser
+          //   runAsPromises
           //   tests={[
           //     syncTest1,
           //     syncTest2
           //   ]} />
+
         }
       </div>
     );

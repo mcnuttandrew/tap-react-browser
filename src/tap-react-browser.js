@@ -1,39 +1,20 @@
 import React, {Component} from 'react';
-import test from 'tape';
+import tape from 'tape';
 
 import PropTypes from 'prop-types';
 import SingleTest from './single-test';
 import TestHeader from './test-header';
 
-class PromiseEndTest extends test {
-  constructor(t, resolve, reject, ...args) {
-    super(t, args);
-    this.resolve = resolve;
-    this.reject = reject;
-  }
-
-  end() {
-    console.log('end??')
-    this.resolve();
-    super.test();
-  }
-}
-
 function testPromisify(oneTest) {
   return new Promise((resolve, reject) => {
-    const testPromise = new PromiseEndTest(oneTest, resolve, reject);
-    // console.log(testPromise)
-    // testPromise(oneTest);
-    // test(t => {
-    //   console.log(t)
-    //   const wrapperT = Object.assign({}, t);
-    //   console.log(wrapperT)
-    //   wrapperT.end = () => {
-    //     resolve();
-    //     t.end();
-    //   };
-    //   wrapperT(oneTest);
-    // });
+    tape(oneTest.name || '(anonymous)', t => {
+      const wrapperT = Object.assign({}, t);
+      wrapperT.end = () => {
+        resolve();
+        t.end();
+      };
+      (oneTest.test || oneTest)(wrapperT);
+    });
   });
 }
 
@@ -42,36 +23,35 @@ function buildFunctionChain(tests) {
     return testPromisify(tests[0]);
   }
 
-  return buildFunctionChain(tests.slice(0, test.length - 1))
-    .then(() => {
-      console.log('??', tests.length)
-      // console.log
-      testPromisify(tests[test.length - 1])
-    });
+  return buildFunctionChain(tests.slice(0, tests.length - 1))
+    .then(() => testPromisify(tests[tests.length - 1]));
 }
 
 class TapReactBrowser extends Component {
   state = {
+    // TODO add error stat
     done: false,
     tests: []
   }
   componentWillMount() {
-    test.createStream({objectMode: true}).on('data', (row) => {
-      const isDone = row.type && row.type === 'end';
-      // const catchEnd = x =>
-      console.log(row)
+    tape.createStream({objectMode: true}).on('data', row => {
+      const done = row.type && row.type === 'end';
       this.setState({
         tests: this.state.tests.concat(row),
-        done: isDone,
-
+        done
       });
     });
   }
 
   componentDidMount() {
-    // const {tests} = this.props;
-    buildFunctionChain(this.props.tests);
+    const {tests, runAsPromises} = this.props;
+    if (runAsPromises) {
+      buildFunctionChain(tests);
+      return;
+    }
+    tests.forEach(oneTest => tape(oneTest));
   }
+
   render() {
     const {done, tests} = this.state;
     const {success, total} = tests.reduce((acc, {type, ok}) => {
@@ -86,27 +66,37 @@ class TapReactBrowser extends Component {
 
     const testOutput = tests.reduce((acc, singletest, index) => {
       if (singletest.type === 'test') {
-        return acc.concat(<TestHeader globalSuccess={success === total} name={singletest.name}/>);
+        return acc.concat(
+          <TestHeader
+            key={`header-${index}`}
+            globalSuccess={success === total}
+            name={singletest.name}/>);
       }
       if (singletest.type !== 'assert') {
         return acc;
       }
-      return acc.concat(<SingleTest {...singletest} index={index} />);
+      return acc.concat(<SingleTest {...singletest} index={index} key={index}/>);
     }, []);
+
     return (
-      <div>
-        <div style={{fontSize: '24px'}}>
+      <div className="tap-react-browser">
+        <div
+          className="tap-react-browser--global-status"
+          style={{fontSize: '24px'}}>
           {done ? `All done! ${success} / ${total} tests passed` : 'Tests are running...'}
         </div>
-        <div>{testOutput}</div>
+        <div className="tap-react-browser--test-wrapper">
+          {testOutput}
+        </div>
       </div>
     );
   }
 }
 
+TapReactBrowser.displayName = 'TapReactBrowser';
 TapReactBrowser.propTypes = {
   // TODO does PropTypes have a promise type
-  tests: PropTypes.arrayOf(PropTypes.func),
+  tests: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object])),
   runAsPromises: PropTypes.bool
 };
 

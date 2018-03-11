@@ -19,7 +19,6 @@
     "eslint-config-uber-jsx": "^3.0.1",
     "eslint-plugin-babel": "^4.0.0",
     "eslint-plugin-react": "^6.9.0",
-    "faucet": "^0.0.1",
     "react": "^16.2.0",
     "tape": "4"
   },

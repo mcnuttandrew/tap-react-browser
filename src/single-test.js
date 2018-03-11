@@ -9,26 +9,35 @@ class SingleTest extends Component {
           className="tap-react-browser-single-test"
           style={{display: 'flex', alignItems: 'center'}} >
         <div
+          className="tap-react-browser-single-test--number"
           style={{
             fontSize: ok ? '12px' : '32px',
             padding: '15px',
             color: ok ? 'green' : 'red'}}>
           {index}
         </div>
-        <div style={{display: 'flex', flexDirection: 'column'}}>
+        <div
+          className="tap-react-browser-single-test--test-display"
+          style={{display: 'flex', flexDirection: 'column'}}>
           <span>
             <span style={{color: ok ? 'green' : 'red'}}>{ok ? 'PASSED' : 'FAILED'}</span>
             <span
               className="tap-react-browser-single-test--message"
               style={{marginLeft: '20px', textTransform: 'uppercase'}}>{name}</span>
           </span>
-          {!ok && <div> Expected: {JSON.stringify(expected, null, 2)}</div>}
-          {!ok && <div> Found: {JSON.stringify(actual, null, 2)}</div>}
+          {!ok && <div
+            className="tap-react-browser-single-test--expected">
+            Expected: {JSON.stringify(expected, null, 2)}
+          </div>}
+          {!ok && <div
+            className="tap-react-browser-single-test--found">
+            Found: {JSON.stringify(actual, null, 2)}</div>}
         </div>
       </div>);
   }
 }
 
+SingleTest.displayName = 'TapReactBrowser-SingleTest';
 SingleTest.propTypes = {
   index: PropTypes.number,
   name: PropTypes.string,

@@ -1,7 +1,3 @@
-import test from 'tape';
-
-
-
 export function testWithPromise(t) {
   Promise.resolve()
     .then(() => {
@@ -35,12 +31,12 @@ export function testWithBatchPromise(t) {
     })
     .then(() => new Promise((resolve, reject) => setTimeout(() => resolve(), 1000)))
     .then(results => {
-      const browserTest = [].slice.call(document.querySelectorAll('.tap-react-browser-single-test--message'))
+      const browserTest = [].slice.call(document.querySelectorAll('.tap-react-browser-single-test--number'))
         .reduce((acc, node) => {
           if (!acc.inOrder) {
             return false;
           }
-          const newNum = Number(node.textContent[0]);
+          const newNum = Number(node.textContent);
           return {
             prevNum: newNum,
             inOrder: newNum > acc.prevNum
