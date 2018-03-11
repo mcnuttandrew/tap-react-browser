@@ -27,7 +27,7 @@ module.exports = {
   output: {
     filename: './index.js',
     libraryTarget: 'umd',
-    publicPath: '/dist/'
+    publicPath: '/'
   }
 
 };
