@@ -1,0 +1,33 @@
+const webpack = require('webpack');
+
+module.exports = {
+  entry: {app: './src/index'},
+
+  devtool: 'source-maps',
+
+  module: {
+    rules: [{
+      test: /\.js$/,
+      loader: 'babel-loader',
+      exclude: [/node_modules/]
+    }]
+  },
+  // unsure if right
+  node: {
+    fs: 'empty'
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('production')
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin()
+  ],
+  output: {
+    filename: 'TapReactBrowser.js',
+    libraryTarget: 'umd',
+    publicPath: '/dist/'
+  }
+
+};

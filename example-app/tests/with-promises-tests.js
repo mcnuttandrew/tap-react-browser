@@ -31,7 +31,9 @@ export function testWithBatchPromise(t) {
     })
     .then(() => new Promise((resolve, reject) => setTimeout(() => resolve(), 1000)))
     .then(results => {
-      const browserTest = [].slice.call(document.querySelectorAll('.tap-react-browser-single-test--number'))
+      const browserTest = [].slice.call(
+          document.querySelectorAll(
+            '.tap-react-browser--global-status:nth-child(2) .tap-react-browser-single-test--number'))
         .reduce((acc, node) => {
           if (!acc.inOrder) {
             return false;

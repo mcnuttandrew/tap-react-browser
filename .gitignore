@@ -2,6 +2,8 @@
 build/
 node_modules
 npm-debug.log
+dist/
+es/
 
 data-hacking/*.json
 data-hacking/*.csv

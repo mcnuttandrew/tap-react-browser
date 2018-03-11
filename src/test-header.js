@@ -3,11 +3,14 @@ import PropTypes from 'prop-types';
 
 class TestHeader extends Component {
   render() {
-    const {name, globalSuccess} = this.props;
+    const {name, sectionSuccess, done} = this.props;
     return (
       <div
         className="tap-react-browser--test-header"
-        style={{fontSize: '24px', color: globalSuccess ? 'green' : 'red'}}>
+        style={{
+          fontSize: '24px',
+          color: !done ? 'black' : sectionSuccess ? 'green' : 'red'
+        }}>
         {name}
       </div>
     );
@@ -16,7 +19,8 @@ class TestHeader extends Component {
 
 TestHeader.displayName = 'TapReactBrowser-TestHeader';
 TestHeader.propTypes = {
-  globalSuccess: PropTypes.bool,
+  done: PropTypes.bool,
+  sectionSuccess: PropTypes.bool,
   name: PropTypes.string
 };
 

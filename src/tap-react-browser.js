@@ -2,8 +2,7 @@ import React, {Component} from 'react';
 import tape from 'tape';
 
 import PropTypes from 'prop-types';
-import SingleTest from './single-test';
-import TestHeader from './test-header';
+import TestSection from './test-section';
 
 function testPromisify(oneTest) {
   return new Promise((resolve, reject) => {
@@ -18,6 +17,9 @@ function testPromisify(oneTest) {
   });
 }
 
+// this function takes in a list of functions or objects containing functions
+// (the later being of the form {name, test}) and runs them through testPromisify
+// which runs them through tape while wrapping them in promises
 function buildFunctionChain(tests) {
   if (tests.length <= 1) {
     return testPromisify(tests[0]);
@@ -49,34 +51,29 @@ class TapReactBrowser extends Component {
       buildFunctionChain(tests);
       return;
     }
-    tests.forEach(oneTest => tape(oneTest));
+    tests.forEach(oneTest =>
+      tape(oneTest.name || '(anonymous)', oneTest.test || oneTest)
+    );
   }
 
   render() {
     const {done, tests} = this.state;
-    const {success, total} = tests.reduce((acc, {type, ok}) => {
-      if (type !== 'assert') {
-        return acc;
+    let success = 0;
+    let total = 0;
+    // group all of the tests into their appropriate sections, while counting the results
+    const sections = tests.reduce((acc, tapLine) => {
+      const {type, ok, test, id} = tapLine;
+      const testSectionId = (type === 'assert' || type === 'end') ? test : id;
+      if (!acc[testSectionId]) {
+        acc[testSectionId] = [];
       }
-      return {
-        total: acc.total + 1,
-        success: acc.success + (ok ? 1 : 0)
-      };
-    }, {success: 0, total: 0});
-
-    const testOutput = tests.reduce((acc, singletest, index) => {
-      if (singletest.type === 'test') {
-        return acc.concat(
-          <TestHeader
-            key={`header-${index}`}
-            globalSuccess={success === total}
-            name={singletest.name}/>);
+      acc[testSectionId] = (acc[testSectionId] || []).concat(tapLine);
+      if (type === 'assert') {
+        success += (ok ? 1 : 0);
+        total += 1;
       }
-      if (singletest.type !== 'assert') {
-        return acc;
-      }
-      return acc.concat(<SingleTest {...singletest} index={index} key={index}/>);
-    }, []);
+      return acc;
+    }, {});
 
     return (
       <div className="tap-react-browser">
@@ -86,7 +83,7 @@ class TapReactBrowser extends Component {
           {done ? `All done! ${success} / ${total} tests passed` : 'Tests are running...'}
         </div>
         <div className="tap-react-browser--test-wrapper">
-          {testOutput}
+          {Object.keys(sections).map(section => <TestSection tapOutput={sections[section]}/>)}
         </div>
       </div>
     );
