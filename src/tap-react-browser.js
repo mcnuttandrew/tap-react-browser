@@ -4,8 +4,11 @@ import tape from 'tape';
 import PropTypes from 'prop-types';
 import TestSection from './test-section';
 
+// this function takes a single test,
+// which can either be an object containing a key pointing to a test function
+// or a single test function
 function testPromisify(oneTest) {
-  return new Promise((resolve, reject) => {
+  return () => new Promise((resolve, reject) => {
     tape(oneTest.name || '(anonymous)', t => {
       const wrapperT = Object.assign({}, t);
       wrapperT.end = () => {
@@ -19,14 +22,9 @@ function testPromisify(oneTest) {
 
 // this function takes in a list of functions or objects containing functions
 // (the later being of the form {name, test}) and runs them through testPromisify
-// which runs them through tape while wrapping them in promises
-function buildFunctionChain(tests) {
-  if (tests.length <= 1) {
-    return testPromisify(tests[0]);
-  }
-
-  return buildFunctionChain(tests.slice(0, tests.length - 1))
-    .then(() => testPromisify(tests[tests.length - 1]));
+// then promise chains those promises together
+function executePromisesInSequence(tests) {
+  tests.map(testPromisify).reduce((cur, next) => cur.then(next()), Promise.resolve());
 }
 
 class TapReactBrowser extends Component {
@@ -48,7 +46,7 @@ class TapReactBrowser extends Component {
   componentDidMount() {
     const {tests, runAsPromises} = this.props;
     if (runAsPromises) {
-      buildFunctionChain(tests);
+      executePromisesInSequence(tests);
       return;
     }
     tests.forEach(oneTest =>
@@ -83,7 +81,9 @@ class TapReactBrowser extends Component {
           {done ? `All done! ${success} / ${total} tests passed` : 'Tests are running...'}
         </div>
         <div className="tap-react-browser--test-wrapper">
-          {Object.keys(sections).map(section => <TestSection tapOutput={sections[section]}/>)}
+          {Object.keys(sections).map((section, idx) =>
+            <TestSection tapOutput={sections[section]} key={`sestion-${idx}`}/>
+          )}
         </div>
       </div>
     );

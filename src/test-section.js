@@ -32,7 +32,7 @@ class TestSection extends Component {
                 name={tapLine.name}/>);
           }
           if (tapLine.type !== 'assert') {
-            return <div />;
+            return <div key={`${tapLine.id}-${index}-anon`}/>;
           }
           return <SingleTest {...tapLine} index={tapLine.id} key={`${tapLine.id}-${index}`}/>;
         })}
@@ -44,7 +44,7 @@ class TestSection extends Component {
 
 TestSection.displayName = 'TapReactBrowser-TestSection';
 TestSection.propTypes = {
-  tapOutput: PropTypes.arrayOf(PropTypes.func)
+  tapOutput: PropTypes.arrayOf(PropTypes.object)
 };
 
 export default TestSection;
