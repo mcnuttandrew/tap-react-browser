@@ -17,6 +17,7 @@ export function testWithPromise(t) {
 
 const getTime = () => (new Date()).getTime();
 export function testWithBatchPromise(t) {
+  // t.comment('wow cool tests');
   Promise.resolve()
     .then(() => {
       const startTime = getTime();
@@ -33,7 +34,7 @@ export function testWithBatchPromise(t) {
     .then(results => {
       const browserTest = [].slice.call(
           document.querySelectorAll(
-            '.tap-react-browser--global-status:nth-child(2) .tap-react-browser-single-test--number'))
+            '.tap-react-browser--global-status:nth-child(4) .tap-react-browser-single-test--number'))
         .reduce((acc, node) => {
           if (!acc.inOrder) {
             return false;

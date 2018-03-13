@@ -8,8 +8,8 @@ import TestSection from './test-section';
 // which can either be an object containing a key pointing to a test function
 // or a single test function
 function testPromisify(oneTest) {
-  return () => new Promise((resolve, reject) => {
-    tape(oneTest.name || '(anonymous)', t => {
+  return harness => new Promise((resolve, reject) => {
+    harness(oneTest.name || '(anonymous)', t => {
       const wrapperT = Object.assign({}, t);
       wrapperT.end = () => {
         resolve();
@@ -23,18 +23,19 @@ function testPromisify(oneTest) {
 // this function takes in a list of functions or objects containing functions
 // (the later being of the form {name, test}) and runs them through testPromisify
 // then promise chains those promises together
-function executePromisesInSequence(tests) {
-  tests.map(testPromisify).reduce((cur, next) => cur.then(next()), Promise.resolve());
+function executePromisesInSequence(tests, harness) {
+  tests.map(testPromisify).reduce((cur, next) => cur.then(next(harness)), Promise.resolve());
 }
 
 class TapReactBrowser extends Component {
   state = {
     // TODO add error stat
     done: false,
-    tests: []
+    tests: [],
+    harness: tape.createHarness()
   }
   componentWillMount() {
-    tape.createStream({objectMode: true}).on('data', row => {
+    this.state.harness.createStream({objectMode: true}).on('data', row => {
       const done = row.type && row.type === 'end';
       this.setState({
         tests: this.state.tests.concat(row),
@@ -44,14 +45,13 @@ class TapReactBrowser extends Component {
   }
 
   componentDidMount() {
+    const {harness} = this.state;
     const {tests, runAsPromises} = this.props;
     if (runAsPromises) {
-      executePromisesInSequence(tests);
+      executePromisesInSequence(tests, harness);
       return;
     }
-    tests.forEach(oneTest =>
-      tape(oneTest.name || '(anonymous)', oneTest.test || oneTest)
-    );
+    tests.forEach(oneTest => harness(oneTest.name || '(anonymous)', oneTest.test || oneTest));
   }
 
   render() {
@@ -72,7 +72,7 @@ class TapReactBrowser extends Component {
       }
       return acc;
     }, {});
-
+    // console.log(tests)
     return (
       <div className="tap-react-browser">
         <div

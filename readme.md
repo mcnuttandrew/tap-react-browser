@@ -44,7 +44,7 @@ Start by writing a test. A tape test is a function that expects one argument in 
 
 ```js
 export function myCoolTest(t) {
-  t.equal('batmang'.length, 7, 'batman should have seven characters in it');
+  t.equal('batmang'.length, 7, 'batmang should have seven characters in it');
   t.ok(1 === 1, 'basic truths should stay true');
   t.deepEqual({test: 1}, {test: 1}, 'cool features from tap should stil exisit');
   t.end();
@@ -68,9 +68,7 @@ export default class ExampleApp extends Component {
 }
 ```
 
-And that's the whole thing!
-
-NOTE!!! In this early version of the library we only support a single TapReactBrowser instance per page
+And that's the whole thing! You can have as many TapReactBrowser's per window as you want, you can do anything.
 
 ## API
 

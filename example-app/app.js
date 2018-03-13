@@ -10,32 +10,41 @@ export default class ExampleApp extends Component {
     return (
       <div>
         <h2>tap-react-browser META-TESTING APP</h2>
-        {
+        <div style={{display: 'flex'}}>
+          {
+            <TapReactBrowser
+              runAsPromises
+              tests={[
+                function inlinePromise(t) {
+                  t.equal('cool dogs with sunglasses'.split(' ').length, 4,
+                    'should be able to run an named inline test correctly.');
+                  t.end();
+                },
+                // anon inline test,
+                t => {
+                  t.equal('batmang'.length, 7, 'should be able to run an anonymous inline test correctly.');
+                  t.end();
+                },
+                {name: 'test-with-promise', test: testWithPromise},
+                testWithBatchPromise
+              ]} />
+
+          }
+
           <TapReactBrowser
             runAsPromises
             tests={[
-              function inlinePromise(t) {
-                t.equal('cool dogs with sunglasses'.split(' ').length, 4,
-                  'should be able to run an named inline test correctly.');
-                t.end();
-              },
-              // anon inline test,
-              t => {
-                t.equal('batmang'.length, 7, 'should be able to run an anonymous inline test correctly.');
-                t.end();
-              },
-              {name: 'test-with-promise', test: testWithPromise},
-              testWithBatchPromise
+              syncTest1,
+              syncTest2
             ]} />
 
-          // <TapReactBrowser
-          //   runAsPromises
-          //   tests={[
-          //     syncTest1,
-          //     syncTest2
-          //   ]} />
-
-        }
+          <TapReactBrowser
+            runAsPromises
+            tests={[
+              syncTest1,
+              syncTest2
+            ]} />
+        </div>
       </div>
     );
   }
