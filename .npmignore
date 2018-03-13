@@ -1,2 +1,4 @@
 src/
 example-app/
+publish.sh
+webpack.config.js
