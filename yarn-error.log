@@ -1,5 +1,5 @@
 Arguments: 
-  /Users/mcnutt/.nvm/versions/node/v8.2.0/bin/node /usr/local/Cellar/yarn/1.5.1/libexec/bin/yarn.js test
+  /Users/mcnutt/.nvm/versions/node/v8.2.0/bin/node /usr/local/Cellar/yarn/1.5.1/libexec/bin/yarn.js lint
 
 PATH: 
   /Users/mcnutt/.nvm/versions/node/v8.2.0/bin:/opt/subversion/bin/:/Applications/Postgres93.app/Contents/MacOS/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/tools:/platform-tools:/Users/mcnutt/Library/Android/sdk/tools:/Users/mcnutt/Library/Android/sdk/platform-tools
@@ -22,7 +22,8 @@ npm manifest:
     "scripts": {
       "start": "(cd example-app && command -v yarn >/dev/null && yarn && npm start || npm install && npm start)",
       "build": "webpack",
-      "test": "babel-node example-app/integration-test-runner.js"
+      "test": "babel-node example-app/integration-test-runner.js",
+      "lint": "eslint ."
     },
     "devDependencies": {
       "babel-cli": "6.18.0",
@@ -4318,7 +4319,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: sh
-  Arguments: -c babel-node example-app/integration-test-runner.js
+  Arguments: -c eslint .
   Directory: /Users/mcnutt/tap-react-browser
   Output:
   

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "(cd example-app && command -v yarn >/dev/null && yarn && npm start || npm install && npm start)",
     "build": "webpack",
-    "test": "npm run start && babel-node example-app/integration-test-runner.js"
+    "test": "babel-node example-app/integration-test-runner.js",
+    "lint": "eslint src"
   },
   "devDependencies": {
     "babel-cli": "6.18.0",

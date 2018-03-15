@@ -5,5 +5,5 @@ npm-debug.log
 dist/
 es/
 
-data-hacking/*.json
-data-hacking/*.csv
+
+yarn-error.log

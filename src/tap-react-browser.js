@@ -34,15 +34,13 @@ class TapReactBrowser extends Component {
     endCount: 0,
     tests: [],
     harness: tape.createHarness()
-    // this is prolly a bad idea
-    // id: `${Math.random()}`.slice(2)
   }
   componentWillMount() {
     this.state.harness.createStream({objectMode: true}).on('data', row => {
-      const done = row.type && row.type === 'end';
       const tests = this.state.tests.concat(row);
       const endCount = this.state.endCount + (row.type && row.type === 'end' ? 1 : 0);
-      if (endCount === this.props.tests.length) {
+      const done = endCount === this.props.tests.length;
+      if (done) {
         this.props.onComplete(tests);
       }
       this.setState({
