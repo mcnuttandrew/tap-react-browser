@@ -1,9 +1,7 @@
 language: node_js
+sudo: required
 addons:
-  apt:
-    packages:
-      # This is required to run new chrome on old trusty
-      - libnss3
+  chrome: stable
 node_js:
   - '6'
   - '7'
