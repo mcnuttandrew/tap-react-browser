@@ -6,3 +6,6 @@ dist/
 es/
 
 yarn-error.log
+
+
+example-app/bundle.*

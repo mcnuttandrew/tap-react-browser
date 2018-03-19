@@ -12,6 +12,11 @@ module.exports = {
   },
   node: {
     fs: 'empty'
+  },
+  output: {
+    filename: './bundle.js',
+    libraryTarget: 'umd',
+    publicPath: '/'
   }
 
 };

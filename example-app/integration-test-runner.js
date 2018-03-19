@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const tape = require('tape');
+const path = require('path');
 
 let browser;
 let page;
@@ -49,7 +50,7 @@ tape('Meta-testing results', t => {
   })
   .then(newPage => {
     page = newPage;
-    return page.goto('http://localhost:3001/', {waitUntil: 'networkidle2'});
+    return page.goto(`file://${path.resolve('./example-app/index.html')}`);
   })
   .then(() => page.waitForSelector('.meta-test .tap-react-browser--done', {timeout: null, visible: true}))
   .then(res => page.evaluate(() => document.TapReactBrowserTestResults))
