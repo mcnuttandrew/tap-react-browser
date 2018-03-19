@@ -1,19 +1,59 @@
 import ReactDOM from 'react-dom';
 import React, {Component} from 'react';
 import TapReactBrowser from '../src';
+import {testExplanation, examineTestBatch} from './test-utils';
 
 import {testWithPromise, testWithBatchPromise} from './tests/with-promises-tests';
 import {syncTest1, syncTest2} from './tests/sync-tests';
 
 export default class ExampleApp extends Component {
+  state = {
+    testResults: {}
+  }
+
   render() {
+    const {testResults} = this.state;
     return (
       <div>
-        <h2>tap-react-browser META-TESTING APP</h2>
-        <div style={{display: 'flex'}}>
+        <h1>tap-react-browser META-TESTING APP</h1>
+        <div style={{maxWidth: '600px'}}>
+          {testExplanation}
+        </div>
+        <div className="meta-test">
+          {
+            Object.keys(testResults).length === 3 && <TapReactBrowser
+              runAsPromises
+              onComplete={tests => {
+                // put the meta test results somewhere puppet can pick them up
+                document.TapReactBrowserTestResults = tests;
+              }}
+              tests={[
+                {
+                  name: 'meta test, this test runs after all the other tests',
+                  test: t => {
+                    const promiseTestResults = examineTestBatch(testResults.promiseTests);
+                    t.equal(promiseTestResults.passed, promiseTestResults.total,
+                       'all promise tests should pass');
+                    const syncTest1Results = examineTestBatch(testResults.syncTest1);
+                    t.equal(syncTest1Results.passed + 1, syncTest1Results.total,
+                      'one of the sync test should have failed');
+                    const syncTest2Results = examineTestBatch(testResults.syncTest2);
+                    t.equal(syncTest2Results.passed + 1, syncTest2Results.total,
+                      'one of the sync test should have failed');
+                    t.end();
+                  }
+                }
+              ]} />
+          }
+        </div>
+        <div style={{display: 'flex'}} className="main-tests">
           {
             <TapReactBrowser
               runAsPromises
+              onComplete={tests => {
+                testResults.promiseTests = tests;
+                this.setState({testResults});
+              }}
               tests={[
                 function inlinePromise(t) {
                   t.equal('cool dogs with sunglasses'.split(' ').length, 4,
@@ -32,14 +72,20 @@ export default class ExampleApp extends Component {
           }
 
           <TapReactBrowser
-            runAsPromises
+            onComplete={tests => {
+              testResults.syncTest1 = tests;
+              this.setState({testResults});
+            }}
             tests={[
               syncTest1,
               syncTest2
             ]} />
 
           <TapReactBrowser
-            runAsPromises
+            onComplete={tests => {
+              testResults.syncTest2 = tests;
+              this.setState({testResults});
+            }}
             tests={[
               syncTest1,
               syncTest2

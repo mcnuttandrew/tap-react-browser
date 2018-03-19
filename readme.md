@@ -20,21 +20,21 @@ This library is still very much a work in progress.
 
 Installation is very similar to most any other npm package. First have tape and react installed, which we are dependent on you providing. Then install in a normal fashion:
 
-```js
+```sh
 npm install --save tap-react-browser
-```
 
-or if you prefer yarn
+# or if you prefer yarn
 
-```js
 yarn add tap-react-browser
 ```
 
 The only slight wrinkle, is that if you are building via webpack you need to add
 
+```js
 node: {
   fs: 'empty'
 }
+```
 
 To your webpack config. It's very important!!! Tape will not run in the browser otherwise. See the example-app's webpack config for more details.
 
@@ -61,6 +61,9 @@ export default class ExampleApp extends Component {
         <h1> Hey Mom! </h1>
         <TapReactBrowser
           runAsPromises
+          onComplete={tests => {
+            console.log('hi tests!')
+          }}
           tests={[myCoolTest]} />
       </div>
     );
@@ -83,6 +86,10 @@ This is the list of tests to run, each element in the test suite can either be e
 runAsPromises     
 Type: `boolean`     
 Whether or not to force serial execution on these tests via promises
+
+onComplete     
+Type: `function`     
+After all of tests provided to a component have completed this function is run. It recieves as a first argument the tap out put for the tests in that component.
 
 
 ## Contributions

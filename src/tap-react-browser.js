@@ -31,15 +31,22 @@ class TapReactBrowser extends Component {
   state = {
     // TODO add error stat
     done: false,
+    endCount: 0,
     tests: [],
     harness: tape.createHarness()
   }
   componentWillMount() {
     this.state.harness.createStream({objectMode: true}).on('data', row => {
-      const done = row.type && row.type === 'end';
+      const tests = this.state.tests.concat(row);
+      const endCount = this.state.endCount + (row.type && row.type === 'end' ? 1 : 0);
+      const done = endCount === this.props.tests.length;
+      if (done) {
+        this.props.onComplete(tests);
+      }
       this.setState({
-        tests: this.state.tests.concat(row),
-        done
+        tests,
+        done,
+        endCount
       });
     });
   }
@@ -74,7 +81,7 @@ class TapReactBrowser extends Component {
     }, {});
     // console.log(tests)
     return (
-      <div className="tap-react-browser">
+      <div className={`tap-react-browser tap-react-browser--${done ? 'done' : 'testing'}`}>
         <div
           className="tap-react-browser--global-status"
           style={{fontSize: '24px'}}>
@@ -91,10 +98,14 @@ class TapReactBrowser extends Component {
 }
 
 TapReactBrowser.displayName = 'TapReactBrowser';
+TapReactBrowser.defaultProps = {
+  onComplete: () => {}
+};
 TapReactBrowser.propTypes = {
   // TODO does PropTypes have a promise type
-  tests: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object])),
-  runAsPromises: PropTypes.bool
+  tests: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object])).isRequired,
+  runAsPromises: PropTypes.bool,
+  onComplete: PropTypes.func
 };
 
 export default TapReactBrowser;

@@ -5,7 +5,10 @@
   "license": "MIT",
   "scripts": {
     "start": "(cd example-app && command -v yarn >/dev/null && yarn && npm start || npm install && npm start)",
-    "build": "webpack"
+    "build": "(yarn || npm install) && webpack",
+    "build-test": "cd example-app && (yarn || npm install) && webpack",
+    "test": "npm run build-test && babel-node example-app/integration-test-runner.js",
+    "lint": "eslint src"
   },
   "devDependencies": {
     "babel-cli": "6.18.0",
@@ -20,6 +23,7 @@
     "eslint-config-uber-jsx": "^3.0.1",
     "eslint-plugin-babel": "^4.0.0",
     "eslint-plugin-react": "^6.9.0",
+    "puppeteer": "^1.1.1",
     "react": "^16.2.0",
     "tape": "4",
     "webpack": "2.2.0-rc.4"
