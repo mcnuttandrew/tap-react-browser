@@ -7,6 +7,9 @@
   <a href="https://npmjs.org/package/tap-react-browser">
     <img src="https://img.shields.io/npm/dm/tap-react-browser.svg?style=flat-square" alt="downloads" />
   </a>
+  <a href="https://travis-ci.org/mcnuttandrew/tap-react-browser">
+    <img src="https://travis-ci.org/mcnuttandrew/tap-react-browser.svg?branch=master" alt="build-status" />
+  </a>
 </p>
 
 Has this ever happened to you? You find yourself building a sub application to test out the behaviour of a library in the browser, and you end up needing to visually verify everything. What a hassle! tap-react-browser is a light wrapper on tape that allows you you to drop a bunch of tests in a sequence into tape, have them run in the order you put in, and come out printed all pretty.
