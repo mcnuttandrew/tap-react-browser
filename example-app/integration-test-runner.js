@@ -6,7 +6,9 @@ let browser;
 let page;
 
 const EXPECTED_META_TEST_OUTPUT = [{
-  type: 'test', name: 'meta test, this test runs after all the other tests', id: 0
+  type: 'test',
+  name: 'meta test, this test runs after all the other tests',
+  id: 0
 }, {
   id: 0,
   ok: true,
@@ -35,6 +37,16 @@ const EXPECTED_META_TEST_OUTPUT = [{
   objectPrintDepth: 5,
   actual: 6,
   expected: 6,
+  test: 0,
+  type: 'assert'
+}, {
+  id: 3,
+  ok: true,
+  name: 'class and loader tests should pass correctly',
+  operator: 'equal',
+  objectPrintDepth: 5,
+  actual: 2,
+  expected: 2,
   test: 0,
   type: 'assert'
 }, {

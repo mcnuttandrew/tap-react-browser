@@ -51,3 +51,23 @@ export function testWithBatchPromise(t) {
     .then(() => t.end());
 }
 
+export const classNameAndLoaderTest = {
+  name: 'classname and loader tests',
+  test: t => {
+    Promise.resolve()
+      .then(() => {
+        const testNode = document.querySelectorAll('.classy-test-case .tap-react-browser--spinner');
+        t.equal(testNode.length, 0, 'should initially find that the spinner is not present');
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve();
+          }, 2000);
+        });
+      })
+      .then(() => {
+        const testNode = document.querySelectorAll('.classy-test-case .tap-react-browser--spinner');
+        t.equal(testNode.length, 0, 'after test has run there still should be no spinner');
+      })
+      .catch(() => t.end())
+      .then(() => t.end());
+  }};

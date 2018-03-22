@@ -1,29 +1,44 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
+
+const TestWrapper = styled.div`
+  display: flex;
+  alignItems: center;
+`;
+
+const NumberWrapper = styled.div`
+  font-size: ${props => props.ok ? '12px' : '32px'};
+  padding: 2px 15px;
+  color: ${props => props.ok ? 'green' : 'red'};
+`;
+
+const OutputWrapper = styled.div`
+  display: 'flex';
+  flexDirection: 'column';
+`;
+
+const TestMessage = styled.span`
+  color: ${props => props.ok ? 'green' : 'red'}
+`;
+
+const TestName = styled.span`
+  margin-left: 20px;
+  text-transform: uppercase;
+`;
 
 class SingleTest extends Component {
   render() {
     const {ok, name, expected, actual, index} = this.props;
     return (
-      <div
-          className="tap-react-browser-single-test"
-          style={{display: 'flex', alignItems: 'center'}} >
-        <div
-          className="tap-react-browser-single-test--number"
-          style={{
-            fontSize: ok ? '12px' : '32px',
-            padding: '15px',
-            color: ok ? 'green' : 'red'}}>
+      <TestWrapper className="tap-react-browser-single-test">
+        <NumberWrapper ok={ok} className="tap-react-browser-single-test--number">
           {index}
-        </div>
-        <div
-          className="tap-react-browser-single-test--test-display"
-          style={{display: 'flex', flexDirection: 'column'}}>
+        </NumberWrapper>
+        <OutputWrapper className="tap-react-browser-single-test--test-display">
           <span>
-            <span style={{color: ok ? 'green' : 'red'}}>{ok ? 'PASSED' : 'FAILED'}</span>
-            <span
-              className="tap-react-browser-single-test--message"
-              style={{marginLeft: '20px', textTransform: 'uppercase'}}>{name}</span>
+            <TestMessage ok={ok}>{ok ? 'PASSED' : 'FAILED'}</TestMessage>
+            <TestName className="tap-react-browser-single-test--message">{name}</TestName>
           </span>
           {!ok && <div
             className="tap-react-browser-single-test--expected">
@@ -32,8 +47,8 @@ class SingleTest extends Component {
           {!ok && <div
             className="tap-react-browser-single-test--found">
             Found: {JSON.stringify(actual, null, 2)}</div>}
-        </div>
-      </div>);
+        </OutputWrapper>
+      </TestWrapper>);
   }
 }
 

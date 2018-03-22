@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import tape from 'tape';
 
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import TestSection from './test-section';
 
@@ -26,6 +27,10 @@ function testPromisify(oneTest) {
 function executePromisesInSequence(tests, harness) {
   tests.map(testPromisify).reduce((cur, next) => cur.then(next(harness)), Promise.resolve());
 }
+
+const Title = styled.div`
+ font-size: 24px
+`;
 
 class TapReactBrowser extends Component {
   state = {
@@ -62,6 +67,7 @@ class TapReactBrowser extends Component {
   }
 
   render() {
+    const {className, noSpinner} = this.props;
     const {done, tests} = this.state;
     let success = 0;
     let total = 0;
@@ -79,17 +85,19 @@ class TapReactBrowser extends Component {
       }
       return acc;
     }, {});
-    // console.log(tests)
+
     return (
-      <div className={`tap-react-browser tap-react-browser--${done ? 'done' : 'testing'}`}>
-        <div
-          className="tap-react-browser--global-status"
-          style={{fontSize: '24px'}}>
+      <div className={`tap-react-browser tap-react-browser--${done ? 'done' : 'testing'} ${className}`}>
+        <Title
+          className="tap-react-browser--global-status">
           {done ? `All done! ${success} / ${total} tests passed` : 'Tests are running...'}
-        </div>
+        </Title>
         <div className="tap-react-browser--test-wrapper">
           {Object.keys(sections).map((section, idx) =>
-            <TestSection tapOutput={sections[section]} key={`sestion-${idx}`}/>
+            <TestSection
+              tapOutput={sections[section]}
+              noSpinner={noSpinner}
+              key={`sestion-${idx}`}/>
           )}
         </div>
       </div>
@@ -99,13 +107,16 @@ class TapReactBrowser extends Component {
 
 TapReactBrowser.displayName = 'TapReactBrowser';
 TapReactBrowser.defaultProps = {
-  onComplete: () => {}
+  onComplete: () => {},
+  className: ''
 };
 TapReactBrowser.propTypes = {
   // TODO does PropTypes have a promise type
   tests: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object])).isRequired,
   runAsPromises: PropTypes.bool,
-  onComplete: PropTypes.func
+  onComplete: PropTypes.func,
+  className: PropTypes.string,
+  noSpinner: PropTypes.bool
 };
 
 export default TapReactBrowser;

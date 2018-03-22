@@ -2,9 +2,6 @@ const webpack = require('webpack');
 
 module.exports = {
   entry: {app: './src/index'},
-
-  devtool: 'source-maps',
-
   module: {
     rules: [{
       test: /\.js$/,
@@ -29,5 +26,4 @@ module.exports = {
     libraryTarget: 'umd',
     publicPath: '/'
   }
-
 };

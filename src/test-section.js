@@ -5,7 +5,7 @@ import TestHeader from './test-header';
 
 class TestSection extends Component {
   render() {
-    const {tapOutput} = this.props;
+    const {tapOutput, noSpinner} = this.props;
     const {success, total, done} = tapOutput.reduce((acc, {type, ok, test}) => {
       if (type === 'end') {
         acc.done = true;
@@ -26,6 +26,7 @@ class TestSection extends Component {
           if (tapLine.type === 'test') {
             return (
               <TestHeader
+                noSpinner={noSpinner}
                 key={`header-${tapLine.id}`}
                 sectionSuccess={success === total}
                 done={done}
@@ -44,7 +45,8 @@ class TestSection extends Component {
 
 TestSection.displayName = 'TapReactBrowser-TestSection';
 TestSection.propTypes = {
-  tapOutput: PropTypes.arrayOf(PropTypes.object)
+  tapOutput: PropTypes.arrayOf(PropTypes.object),
+  noSpinner: PropTypes.bool
 };
 
 export default TestSection;
