@@ -1,7 +1,7 @@
 # tap-react-browser
 
 <p align="right">
-  <a href="https://npmjs.org/package/tap-react-browsers">
+  <a href="https://npmjs.org/package/tap-react-browser">
     <img src="https://img.shields.io/npm/v/tap-react-browser.svg?style=flat-square" alt="version" />
   </a>
   <a href="https://npmjs.org/package/tap-react-browser">
@@ -88,11 +88,19 @@ This is the list of tests to run, each element in the test suite can either be e
 
 runAsPromises     
 Type: `boolean`     
-Whether or not to force serial execution on these tests via promises
+Whether or not to force serial execution on these tests via promises.
 
 onComplete     
 Type: `function`     
 After all of tests provided to a component have completed this function is run. It recieves as a first argument the tap out put for the tests in that component.
+
+noSpinner     
+Type: `boolean`     
+If this prop is present then there will be no loading spinner. Defaults to false.
+
+className     
+Type: `string`     
+Insert a custom class name.
 
 
 ## Contributions

@@ -3,8 +3,17 @@ import React, {Component} from 'react';
 import TapReactBrowser from '../src';
 import {testExplanation, examineTestBatch} from './test-utils';
 
-import {testWithPromise, testWithBatchPromise} from './tests/with-promises-tests';
-import {syncTest1, syncTest2} from './tests/sync-tests';
+import {
+  testWithPromise,
+  testWithBatchPromise,
+  classNameAndLoaderTest
+} from './tests/with-promises-tests';
+import {
+  syncTest1,
+  syncTest2
+} from './tests/sync-tests';
+
+const NUMBER_OF_TESTS_TO_CHECK = 4;
 
 export default class ExampleApp extends Component {
   state = {
@@ -21,7 +30,7 @@ export default class ExampleApp extends Component {
         </div>
         <div className="meta-test">
           {
-            Object.keys(testResults).length === 3 && <TapReactBrowser
+            Object.keys(testResults).length === NUMBER_OF_TESTS_TO_CHECK && <TapReactBrowser
               runAsPromises
               onComplete={tests => {
                 // put the meta test results somewhere puppet can pick them up
@@ -40,6 +49,9 @@ export default class ExampleApp extends Component {
                     const syncTest2Results = examineTestBatch(testResults.syncTest2);
                     t.equal(syncTest2Results.passed + 1, syncTest2Results.total,
                       'one of the sync test should have failed');
+                    const loaderResults = examineTestBatch(testResults.classNameAndLoaderTests);
+                    t.equal(loaderResults.passed, loaderResults.total,
+                      'class and loader tests should pass correctly');
                     t.end();
                   }
                 }
@@ -90,6 +102,16 @@ export default class ExampleApp extends Component {
               syncTest1,
               syncTest2
             ]} />
+
+          <TapReactBrowser
+            onComplete={tests => {
+              testResults.classNameAndLoaderTests = tests;
+              this.setState({testResults});
+            }}
+            className="classy-test-case"
+            noSpinner
+            runAsPromises
+            tests={[classNameAndLoaderTest]} />
         </div>
       </div>
     );
