@@ -1,6 +1,6 @@
 {
   "name": "tap-react-browser",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
@@ -57,7 +57,12 @@
       },
       "es": {
         "presets": [
-          ["es2015", {"modules": false}],
+          [
+            "es2015",
+            {
+              "modules": false
+            }
+          ],
           "stage-0",
           "react"
         ]
