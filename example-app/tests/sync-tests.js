@@ -11,3 +11,21 @@ export function syncTest2(t) {
   t.deepEqual({test: 1}, {antitest: 1}, 'but this test was design to fail!!!!');
   t.end();
 }
+
+export function buildCommentTest(className, testPosition) {
+  return function commentTest(t) {
+    t.comment('test initial comment');
+    t.ok(true, 'comment test checking in!');
+    t.comment('woah doggy test second comment');
+    const innerText = document.querySelector(
+      `${className} .tap-react-browser--global-section:nth-child(${testPosition})`)
+      .innerText.replace(/\n/g, '');
+    /* eslint-disable max-len */
+    t.equal(innerText,
+      'commentTesttest initial comment0PASSEDCOMMENT TEST CHECKING IN!woah doggy test second comment',
+      'should find the correct text');
+    /* eslint-enable max-len */
+    t.end();
+  };
+}
+

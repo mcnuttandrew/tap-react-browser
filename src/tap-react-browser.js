@@ -4,14 +4,19 @@ import tape from 'tape';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import TestSection from './test-section';
+import {COMMENT_STRING} from './constants';
 
 // this function takes a single test,
 // which can either be an object containing a key pointing to a test function
 // or a single test function
-function testPromisify(oneTest) {
+function testPromisify(oneTest, i) {
   return harness => new Promise((resolve, reject) => {
     harness(oneTest.name || '(anonymous)', t => {
       const wrapperT = Object.assign({}, t);
+      // wrapperT.comment = x => {
+      //   console.log('comment', x)
+      // };
+      wrapperT.comment = comment => t.equal(comment, comment, COMMENT_STRING);
       wrapperT.end = () => {
         resolve();
         t.end();
@@ -63,7 +68,12 @@ class TapReactBrowser extends Component {
       executePromisesInSequence(tests, harness);
       return;
     }
-    tests.forEach(oneTest => harness(oneTest.name || '(anonymous)', oneTest.test || oneTest));
+
+    tests.forEach((oneTest, i) => harness(oneTest.name || '(anonymous)', t => {
+      const wrapperT = Object.assign({}, t);
+      wrapperT.comment = comment => t.equal(comment, comment, COMMENT_STRING);
+      (oneTest.test || oneTest)(wrapperT);
+    }));
   }
 
   render() {

@@ -10,7 +10,8 @@ import {
 } from './tests/with-promises-tests';
 import {
   syncTest1,
-  syncTest2
+  syncTest2,
+  buildCommentTest
 } from './tests/sync-tests';
 
 const NUMBER_OF_TESTS_TO_CHECK = 4;
@@ -94,13 +95,16 @@ export default class ExampleApp extends Component {
             ]} />
 
           <TapReactBrowser
+            className="sync-test-case"
             onComplete={tests => {
               testResults.syncTest2 = tests;
               this.setState({testResults});
             }}
             tests={[
+              buildCommentTest('.sync-test-case', 1),
               syncTest1,
-              syncTest2
+              syncTest2,
+              buildCommentTest('.sync-test-case', 4)
             ]} />
 
           <TapReactBrowser
@@ -111,7 +115,11 @@ export default class ExampleApp extends Component {
             className="classy-test-case"
             noSpinner
             runAsPromises
-            tests={[classNameAndLoaderTest]} />
+            tests={[
+              buildCommentTest('.classy-test-case', 1),
+              classNameAndLoaderTest,
+              buildCommentTest('.classy-test-case', 3)
+            ]} />
         </div>
       </div>
     );

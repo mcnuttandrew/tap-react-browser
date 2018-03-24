@@ -9,7 +9,7 @@ const TestWrapper = styled.div`
 
 const NumberWrapper = styled.div`
   font-size: ${props => props.ok ? '12px' : '32px'};
-  padding: 2px 15px;
+  padding: 2px ${props => props.ok ? '20px' : '15px'};
   color: ${props => props.ok ? 'green' : 'red'};
 `;
 
