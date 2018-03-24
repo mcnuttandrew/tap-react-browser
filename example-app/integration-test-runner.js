@@ -35,8 +35,8 @@ const EXPECTED_META_TEST_OUTPUT = [{
   name: 'one of the sync test should have failed',
   operator: 'equal',
   objectPrintDepth: 5,
-  actual: 6,
-  expected: 6,
+  actual: 14,
+  expected: 14,
   test: 0,
   type: 'assert'
 }, {
@@ -45,8 +45,8 @@ const EXPECTED_META_TEST_OUTPUT = [{
   name: 'class and loader tests should pass correctly',
   operator: 'equal',
   objectPrintDepth: 5,
-  actual: 2,
-  expected: 2,
+  actual: 10,
+  expected: 10,
   test: 0,
   type: 'assert'
 }, {
