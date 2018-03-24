@@ -13,9 +13,6 @@ function testPromisify(oneTest, i) {
   return harness => new Promise((resolve, reject) => {
     harness(oneTest.name || '(anonymous)', t => {
       const wrapperT = Object.assign({}, t);
-      // wrapperT.comment = x => {
-      //   console.log('comment', x)
-      // };
       wrapperT.comment = comment => t.equal(comment, comment, COMMENT_STRING);
       wrapperT.end = () => {
         resolve();
