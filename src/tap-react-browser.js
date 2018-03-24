@@ -34,6 +34,10 @@ const Title = styled.div`
  font-size: 24px
 `;
 
+const StyledDot = styled.span`
+  color: ${props => props.ok ? 'green' : 'red'}
+`;
+
 class TapReactBrowser extends Component {
   state = {
     // TODO add error stat
@@ -74,7 +78,7 @@ class TapReactBrowser extends Component {
   }
 
   render() {
-    const {className, noSpinner} = this.props;
+    const {className, noSpinner, outputMode} = this.props;
     const {done, tests} = this.state;
     let success = 0;
     let total = 0;
@@ -93,15 +97,26 @@ class TapReactBrowser extends Component {
       return acc;
     }, {});
 
+    const passFails = tests.reduce((acc, {ok, type}) => {
+      if (type !== 'assert' || name === COMMENT_STRING) {
+        return acc;
+      }
+      return acc.concat(ok);
+    }, []);
+
     return (
       <div className={`tap-react-browser tap-react-browser--${done ? 'done' : 'testing'} ${className}`}>
         <Title
           className="tap-react-browser--global-status">
           {done ? `All done! ${success} / ${total} tests passed` : 'Tests are running...'}
         </Title>
+        {outputMode === 'dot' && <div>{
+          passFails.map(ok => <StyledDot ok={ok}>{ok ? '.' : 'X'}</StyledDot>)
+        }</div>}
         <div className="tap-react-browser--test-wrapper">
           {Object.keys(sections).map((section, idx) =>
             <TestSection
+              outputMode={outputMode}
               tapOutput={sections[section]}
               noSpinner={noSpinner}
               key={`sestion-${idx}`}/>
@@ -115,7 +130,8 @@ class TapReactBrowser extends Component {
 TapReactBrowser.displayName = 'TapReactBrowser';
 TapReactBrowser.defaultProps = {
   onComplete: () => {},
-  className: ''
+  className: '',
+  outputMode: 'verbose'
 };
 TapReactBrowser.propTypes = {
   // TODO does PropTypes have a promise type
@@ -123,7 +139,8 @@ TapReactBrowser.propTypes = {
   runAsPromises: PropTypes.bool,
   onComplete: PropTypes.func,
   className: PropTypes.string,
-  noSpinner: PropTypes.bool
+  noSpinner: PropTypes.bool,
+  outputMode: PropTypes.oneOf(['dor', 'verbose'])
 };
 
 export default TapReactBrowser;

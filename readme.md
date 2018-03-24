@@ -102,6 +102,9 @@ className
 Type: `string`     
 Insert a custom class name.
 
+outputMode
+Type: `one of ("verbose"|"dot")`
+Type of formatting to use for the test output. Defaults to verbose.
 
 ## Contributions
 

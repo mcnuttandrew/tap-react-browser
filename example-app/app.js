@@ -89,6 +89,7 @@ export default class ExampleApp extends Component {
               testResults.syncTest1 = tests;
               this.setState({testResults});
             }}
+            outputMode="dot"
             tests={[
               syncTest1,
               syncTest2
