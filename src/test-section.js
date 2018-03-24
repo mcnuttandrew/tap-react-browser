@@ -13,7 +13,7 @@ const Comment = styled.div`
 
 class TestSection extends Component {
   render() {
-    const {tapOutput, noSpinner} = this.props;
+    const {tapOutput, noSpinner, outputMode} = this.props;
     const {success, total, done} = tapOutput.reduce((acc, {type, ok, test, name}) => {
       if (type === 'end') {
         acc.done = true;
@@ -32,6 +32,9 @@ class TestSection extends Component {
       <div className="tap-react-browser--global-section">
         {tapOutput.map((tapLine, index) => {
           if (tapLine.type === 'test') {
+            if (outputMode === 'dot') {
+              return <div key={`${tapLine.id}-${index}-anon`} />;
+            }
             return (
               <TestHeader
                 noSpinner={noSpinner}
@@ -41,6 +44,9 @@ class TestSection extends Component {
                 name={tapLine.name}/>);
           }
           if (tapLine.name === COMMENT_STRING) {
+            if (outputMode === 'dot') {
+              return <div key={`${tapLine.id}-${index}-anon`} />;
+            }
             return (
               <Comment
                 className="tap-react-browser-single-comment"
@@ -54,6 +60,9 @@ class TestSection extends Component {
           }
           // here we use a counter because we want to ignore comments in our count
           counter++;
+          if (outputMode !== 'verbose' && tapLine.ok) {
+            return <div />;
+          }
           return <SingleTest {...tapLine} index={counter} key={`${tapLine.id}-${index}`}/>;
         })}
       </div>
@@ -65,7 +74,8 @@ class TestSection extends Component {
 TestSection.displayName = 'TapReactBrowser-TestSection';
 TestSection.propTypes = {
   tapOutput: PropTypes.arrayOf(PropTypes.object),
-  noSpinner: PropTypes.bool
+  noSpinner: PropTypes.bool,
+  outputMode: PropTypes.string.isRequired
 };
 
 export default TestSection;
