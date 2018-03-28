@@ -14,7 +14,62 @@ import {
   buildCommentTest
 } from './tests/sync-tests';
 
-const NUMBER_OF_TESTS_TO_CHECK = 4;
+function waitForSelector(selector) {
+  return new Promise((resolve, reject) => {
+    const checkExisit = setInterval(() => {
+      const target = document.querySelector(selector);
+      if (target) {
+        clearInterval(checkExisit);
+        resolve(target);
+      }
+    });
+  });
+}
+
+class TestComponent extends Component {
+  state = {
+    presses: 0
+  }
+
+  render() {
+    const {presses} = this.state;
+    const {triggerTest} = this.props;
+    return (<button className="test-component" onClick={() => {
+      if (presses > -1) {
+        triggerTest();
+      }
+      this.setState({presses: presses + 1});
+    }}>
+      {`COOL DOGS -> ${presses}`}
+    </button>);
+  }
+}
+
+class TestComponentWrapper extends Component {
+  render() {
+    return (<div style={{border: 'thin solid black'}}>
+      <span>INNER COMPONENT</span>
+      <TapReactBrowser
+        waitForTestTrigger
+        tests={[
+          function innerTest(t) {
+            t.ok(true, 'this should run after a button is pressed');
+            t.end();
+          }
+        ]}>
+        <TestComponent />
+      </TapReactBrowser>
+    </div>);
+  }
+}
+
+const EXPECTED_TEST_SECTIONS = [
+  {expectedFail: 0, key: 'promiseTests'},
+  {expectedFail: 1, key: 'syncTest1'},
+  {expectedFail: 1, key: 'syncTest2'},
+  {expectedFail: 0, key: 'classNameAndLoaderTests'},
+  {expectedFail: 0, key: 'metaTriggeredTest'}
+];
 
 export default class ExampleApp extends Component {
   state = {
@@ -31,7 +86,7 @@ export default class ExampleApp extends Component {
         </div>
         <div className="meta-test">
           {
-            Object.keys(testResults).length === NUMBER_OF_TESTS_TO_CHECK && <TapReactBrowser
+            Object.keys(testResults).length === EXPECTED_TEST_SECTIONS.length && <TapReactBrowser
               runAsPromises
               onComplete={tests => {
                 // put the meta test results somewhere puppet can pick them up
@@ -41,18 +96,12 @@ export default class ExampleApp extends Component {
                 {
                   name: 'meta test, this test runs after all the other tests',
                   test: t => {
-                    const promiseTestResults = examineTestBatch(testResults.promiseTests);
-                    t.equal(promiseTestResults.passed, promiseTestResults.total,
-                       'all promise tests should pass');
-                    const syncTest1Results = examineTestBatch(testResults.syncTest1);
-                    t.equal(syncTest1Results.passed + 1, syncTest1Results.total,
-                      'one of the sync test should have failed');
-                    const syncTest2Results = examineTestBatch(testResults.syncTest2);
-                    t.equal(syncTest2Results.passed + 1, syncTest2Results.total,
-                      'one of the sync test should have failed');
-                    const loaderResults = examineTestBatch(testResults.classNameAndLoaderTests);
-                    t.equal(loaderResults.passed, loaderResults.total,
-                      'class and loader tests should pass correctly');
+
+                    EXPECTED_TEST_SECTIONS.forEach(({expectedFail, key}) => {
+                      const results = examineTestBatch(testResults[key]);
+                      t.equal(results.passed + expectedFail, results.total,
+                         `${key} tests should pass`);
+                    });
                     t.end();
                   }
                 }
@@ -60,29 +109,26 @@ export default class ExampleApp extends Component {
           }
         </div>
         <div style={{display: 'flex'}} className="main-tests">
-          {
-            <TapReactBrowser
-              runAsPromises
-              onComplete={tests => {
-                testResults.promiseTests = tests;
-                this.setState({testResults});
-              }}
-              tests={[
-                function inlinePromise(t) {
-                  t.equal('cool dogs with sunglasses'.split(' ').length, 4,
-                    'should be able to run an named inline test correctly.');
-                  t.end();
-                },
-                // anon inline test,
-                t => {
-                  t.equal('batmang'.length, 7, 'should be able to run an anonymous inline test correctly.');
-                  t.end();
-                },
-                {name: 'test-with-promise', test: testWithPromise},
-                testWithBatchPromise
-              ]} />
-
-          }
+          <TapReactBrowser
+            runAsPromises
+            onComplete={tests => {
+              testResults.promiseTests = tests;
+              this.setState({testResults});
+            }}
+            tests={[
+              function inlinePromise(t) {
+                t.equal('cool dogs with sunglasses'.split(' ').length, 4,
+                  'should be able to run an named inline test correctly.');
+                t.end();
+              },
+              // anon inline test,
+              t => {
+                t.equal('batmang'.length, 7, 'should be able to run an anonymous inline test correctly.');
+                t.end();
+              },
+              {name: 'test-with-promise', test: testWithPromise},
+              testWithBatchPromise
+            ]} />
 
           <TapReactBrowser
             onComplete={tests => {
@@ -121,6 +167,32 @@ export default class ExampleApp extends Component {
               classNameAndLoaderTest,
               buildCommentTest('.classy-test-case', 3)
             ]} />
+
+          <TapReactBrowser
+            className="meta-trigger-tester"
+            onComplete={tests => {
+              testResults.metaTriggeredTest = tests;
+              this.setState({testResults});
+            }}
+            tests={[function metaTriggeredTest(t, ref) {
+              const node = document.querySelector('.meta-trigger-tester .tap-react-browser--testing');
+              t.equal(node.innerText.replace(/\n/g, ''),
+                'Testings are waiting to run...COOL DOGS -> 0',
+                'should find the right inner text before the button is clicked');
+              node.querySelector('button').click();
+              waitForSelector('.meta-trigger-tester .tap-react-browser--done')
+              .then(innerNode => {
+                /* eslint-disable max-len */
+                t.equal(
+                  document.querySelector('.meta-trigger-tester .tap-react-browser--done').innerText.replace(/\n/g, ''),
+                  'All done! 1 / 1 tests passedCOOL DOGS -> 1innerTest0PASSEDTHIS SHOULD RUN AFTER A BUTTON IS PRESSED',
+                  'should find the correct inner text');
+                t.end();
+              });
+            }]}>
+            <TestComponentWrapper />
+          </TapReactBrowser>
+        }
         </div>
       </div>
     );
