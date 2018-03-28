@@ -16,8 +16,6 @@ Has this ever happened to you? You find yourself building a sub application to t
 
 This is an ideal practice for testing browser specific features directly, such web workers or indexeddb, or if you are building a UI component and just want your tests to run in watch mode (assuming you have watch mode set up).
 
-This library is still very much a work in progress.
-
 
 ## Installation
 
