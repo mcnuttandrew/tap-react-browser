@@ -106,8 +106,8 @@ outputMode
 Type: `one of ("verbose"|"dot")`
 Type of formatting to use for the test output. Defaults to verbose.
 
-children
-Type: `React components`
+children     
+Type: `React components`     
 If you want to test the behaviour of a component that might take multiple stages to render, then you can pass it TapReactBrowser as a child. We then decorate that component with a function, triggerTest, which takes no arguments and only triggers the testing for that component. In order to access the trigger functionality you must provide waitForTestTrigger, or else the tests will run normally. For instance:
 
 ```jsx
@@ -124,8 +124,8 @@ If you want to test the behaviour of a component that might take multiple stages
 ```
 Where TestComponent is a button that calls triggerTest on click. Be careful about what type of component you pass in here, this can cause lots of annoying decorator warnings.
 
-waitForTestTrigger
-Type: 'bool'
+waitForTestTrigger     
+Type: 'bool'     
 Engages triggered testing, see children prop specification.
 
 ## Contributions
