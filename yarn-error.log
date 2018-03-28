@@ -19,6 +19,7 @@ npm manifest:
     "version": "0.0.5",
     "main": "index.js",
     "license": "MIT",
+    "description": "React based tap renderer for the browser, test where you live!",
     "scripts": {
       "start": "(cd example-app && command -v yarn >/dev/null && yarn && npm start || npm install && npm start)",
       "build": "(yarn || npm install) && webpack",

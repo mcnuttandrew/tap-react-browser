@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import SingleTest from './single-test';
 import TestHeader from './test-header';
-import {COMMENT_STRING} from './constants';
+import {COMMENT_STRING, KICK_OFF} from './constants';
 
 const Comment = styled.div`
   padding: 2px 20px;
@@ -35,6 +35,10 @@ class TestSection extends Component {
             if (outputMode === 'dot') {
               return <div key={`${tapLine.id}-${index}-anon`} />;
             }
+            // used to ignore the filler test that holds open long wait for tests
+            if (tapLine.name === KICK_OFF) {
+              return <div key={`${index}-!!!!`} />;
+            }
             return (
               <TestHeader
                 noSpinner={noSpinner}
@@ -61,7 +65,7 @@ class TestSection extends Component {
           // here we use a counter because we want to ignore comments in our count
           counter++;
           if (outputMode !== 'verbose' && tapLine.ok) {
-            return <div />;
+            return <div key={`${tapLine.id}-${index}-skip`}/>;
           }
           return <SingleTest {...tapLine} index={counter} key={`${tapLine.id}-${index}`}/>;
         })}

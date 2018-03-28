@@ -12,7 +12,7 @@ const EXPECTED_META_TEST_OUTPUT = [{
 }, {
   id: 0,
   ok: true,
-  name: 'all promise tests should pass',
+  name: 'promiseTests tests should pass',
   operator: 'equal',
   objectPrintDepth: 5,
   actual: 15,
@@ -22,7 +22,7 @@ const EXPECTED_META_TEST_OUTPUT = [{
 }, {
   id: 1,
   ok: true,
-  name: 'one of the sync test should have failed',
+  name: 'syncTest1 tests should pass',
   operator: 'equal',
   objectPrintDepth: 5,
   actual: 6,
@@ -32,7 +32,7 @@ const EXPECTED_META_TEST_OUTPUT = [{
 }, {
   id: 2,
   ok: true,
-  name: 'one of the sync test should have failed',
+  name: 'syncTest2 tests should pass',
   operator: 'equal',
   objectPrintDepth: 5,
   actual: 14,
@@ -42,11 +42,21 @@ const EXPECTED_META_TEST_OUTPUT = [{
 }, {
   id: 3,
   ok: true,
-  name: 'class and loader tests should pass correctly',
+  name: 'classNameAndLoaderTests tests should pass',
   operator: 'equal',
   objectPrintDepth: 5,
   actual: 10,
   expected: 10,
+  test: 0,
+  type: 'assert'
+}, {
+  id: 4,
+  ok: true,
+  name: 'metaTriggeredTest tests should pass',
+  operator: 'equal',
+  objectPrintDepth: 5,
+  actual: 2,
+  expected: 2,
   test: 0,
   type: 'assert'
 }, {

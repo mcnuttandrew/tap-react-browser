@@ -12,7 +12,7 @@
   </a>
 </p>
 
-Has this ever happened to you? You find yourself building a sub application to test out the behaviour of a library in the browser, and you end up needing to visually verify everything. What a hassle! tap-react-browser is a light wrapper on tape that allows you you to drop a bunch of tests in a sequence into tape, have them run in the order you put in, and come out printed all pretty.
+Has this ever happened to you? You find yourself building a sub application to test out the behaviour of a library in the browser, and you end up needing to visually verify everything. What a hassle! tap-react-browser is a light wrapper on [tape](https://github.com/substack/tape) that allows you you to drop a bunch of tests in a sequence into tape, have them run in the order you put in, and come out printed all pretty.
 
 This is an ideal practice for testing browser specific features directly, such web workers or indexeddb, or if you are building a UI component and just want your tests to run in watch mode (assuming you have watch mode set up).
 
@@ -105,6 +105,28 @@ Insert a custom class name.
 outputMode
 Type: `one of ("verbose"|"dot")`
 Type of formatting to use for the test output. Defaults to verbose.
+
+children
+Type: `React components`
+If you want to test the behaviour of a component that might take multiple stages to render, then you can pass it TapReactBrowser as a child. We then decorate that component with a function, triggerTest, which takes no arguments and only triggers the testing for that component. In order to access the trigger functionality you must provide waitForTestTrigger, or else the tests will run normally. For instance:
+
+```jsx
+<TapReactBrowser
+  waitForTestTrigger
+  tests={[
+    function innerTest(t) {
+      t.ok(true, 'this should run after a button is pressed');
+      t.end();
+    }
+  ]}>
+  <TestComponent />
+</TapReactBrowser>
+```
+Where TestComponent is a button that calls triggerTest on click. Be careful about what type of component you pass in here, this can cause lots of annoying decorator warnings.
+
+waitForTestTrigger
+Type: 'bool'
+Engages triggered testing, see children prop specification.
 
 ## Contributions
 
