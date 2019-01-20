@@ -131,7 +131,7 @@ class TapReactBrowser extends Component {
     }, []);
 
     return (
-      <div 
+      <div
         className={classnames({
           'tap-react-browser': true,
           'tap-react-browser--done': done,
