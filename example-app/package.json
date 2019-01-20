@@ -7,13 +7,13 @@
     "build": "NODE_ENV=production webpack"
   },
   "devDependencies": {
-    "babel-cli": "6.18.0",
+    "babel-cli": "^6.26.0",
     "babel-eslint": "^7.1.1",
-    "babel-loader": "^6.2.10",
+    "babel-loader": "^7.1.4",
     "babel-plugin-module-resolver": "^2.4.0",
     "babel-register": "^6.18.0",
     "babelify": "^7.3.0",
-    "browserify": "^14.3.0",
+    "browserify": "^16.2.3",
     "eslint": "^3.13.1",
     "eslint-config-uber-es2015": "^3.0.1",
     "eslint-config-uber-jsx": "^3.0.1",
@@ -24,8 +24,9 @@
     "react-addons-test-utils": ">=15.4.2",
     "react-dom": "^15.5.4",
     "tape": "^4.6.3",
-    "webpack": "2.2.0-rc.7",
-    "webpack-dev-server": "2.2.0-rc.0"
+    "webpack": "4",
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-server": "^3.1.4"
   },
   "license": "MIT",
   "private": true
