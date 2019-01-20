@@ -13,17 +13,10 @@ module.exports = {
   node: {
     fs: 'empty'
   },
-  plugins: [
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify('production')
-      }
-    }),
-    new webpack.optimize.UglifyJsPlugin()
-  ],
   output: {
     filename: './index.js',
     libraryTarget: 'umd',
     publicPath: '/'
-  }
+  },
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development'  // eslint-disable-line
 };

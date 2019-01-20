@@ -17,6 +17,6 @@ module.exports = {
     filename: './bundle.js',
     libraryTarget: 'umd',
     publicPath: '/'
-  }
-
+  },
+  mode: 'development'
 };

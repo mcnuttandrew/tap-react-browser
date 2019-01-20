@@ -28,4 +28,3 @@ export function buildCommentTest(className, testPosition) {
     t.end();
   };
 }
-

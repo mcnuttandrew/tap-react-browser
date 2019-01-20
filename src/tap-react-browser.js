@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import TestSection from './test-section';
 import {COMMENT_STRING, KICK_OFF} from './constants';
+import {classnames} from './utils';
 
 // this function takes a single test,
 // which can either be an object containing a key pointing to a test function
@@ -68,7 +69,7 @@ class TapReactBrowser extends Component {
     }
 
     this.state = {
-      // TODO add error stat
+      // TODO add error state
       done: false,
       endCount: 0,
       tests: [],
@@ -130,7 +131,13 @@ class TapReactBrowser extends Component {
     }, []);
 
     return (
-      <div className={`tap-react-browser tap-react-browser--${done ? 'done' : 'testing'} ${className}`}>
+      <div
+        className={classnames({
+          'tap-react-browser': true,
+          'tap-react-browser--done': done,
+          'tap-react-browser--testing': !done,
+          [className]: true
+        })}>
         <Title
           className="tap-react-browser--global-status">
           {done ?
@@ -156,10 +163,10 @@ class TapReactBrowser extends Component {
           passFails.map((ok, i) => <StyledDot ok={ok} key={`${i}-dot`}>{ok ? '.' : 'X'}</StyledDot>)
         }</div>}
         <div className="tap-react-browser--test-wrapper">
-          {Object.keys(sections).map((section, idx) =>
+          {Object.values(sections).map((section, idx) =>
             <TestSection
               outputMode={outputMode}
-              tapOutput={sections[section]}
+              tapOutput={section}
               noSpinner={noSpinner}
               key={`sestion-${idx}`}/>
           )}

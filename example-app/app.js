@@ -80,11 +80,13 @@ export default class ExampleApp extends Component {
     const {testResults} = this.state;
     return (
       <div>
-        <h1>tap-react-browser META-TESTING APP</h1>
+        <h1>tap-react-browser</h1>
+        <h2>META-TESTING APP</h2>
         <div style={{maxWidth: '600px'}}>
           {testExplanation}
         </div>
-        <div className="meta-test">
+        <div className="meta-test test-section">
+          <h3>META TESTS</h3>
           {
             Object.keys(testResults).length === EXPECTED_TEST_SECTIONS.length && <TapReactBrowser
               runAsPromises
@@ -107,92 +109,99 @@ export default class ExampleApp extends Component {
                 }
               ]} />
           }
+          {
+            Object.keys(testResults).length !== EXPECTED_TEST_SECTIONS.length &&
+            <h4>EXAMPLE TESTS ARE RUNNING</h4>
+          }
         </div>
-        <div style={{display: 'flex'}} className="main-tests">
-          <TapReactBrowser
-            runAsPromises
-            onComplete={tests => {
-              testResults.promiseTests = tests;
-              this.setState({testResults});
-            }}
-            tests={[
-              function inlinePromise(t) {
-                t.equal('cool dogs with sunglasses'.split(' ').length, 4,
-                  'should be able to run an named inline test correctly.');
-                t.end();
-              },
-              // anon inline test,
-              t => {
-                t.equal('batmang'.length, 7, 'should be able to run an anonymous inline test correctly.');
-                t.end();
-              },
-              {name: 'test-with-promise', test: testWithPromise},
-              testWithBatchPromise
-            ]} />
+        <div className="main-tests-wrapper test-section">
+          <h3>EXAMPLE TESTS</h3>
+          <div className="main-tests">
+            <TapReactBrowser
+              runAsPromises
+              onComplete={tests => {
+                testResults.promiseTests = tests;
+                this.setState({testResults});
+              }}
+              tests={[
+                function inlinePromise(t) {
+                  t.equal('cool dogs with sunglasses'.split(' ').length, 4,
+                    'should be able to run an named inline test correctly.');
+                  t.end();
+                },
+                // anon inline test,
+                t => {
+                  t.equal('batmang'.length, 7, 'should be able to run an anonymous inline test correctly.');
+                  t.end();
+                },
+                {name: 'test-with-promise', test: testWithPromise},
+                testWithBatchPromise
+              ]} />
 
-          <TapReactBrowser
-            onComplete={tests => {
-              testResults.syncTest1 = tests;
-              this.setState({testResults});
-            }}
-            outputMode="dot"
-            tests={[
-              syncTest1,
-              syncTest2
-            ]} />
+            <TapReactBrowser
+              onComplete={tests => {
+                testResults.syncTest1 = tests;
+                this.setState({testResults});
+              }}
+              outputMode="dot"
+              tests={[
+                syncTest1,
+                syncTest2
+              ]} />
 
-          <TapReactBrowser
-            className="sync-test-case"
-            onComplete={tests => {
-              testResults.syncTest2 = tests;
-              this.setState({testResults});
-            }}
-            tests={[
-              buildCommentTest('.sync-test-case', 1),
-              syncTest1,
-              syncTest2,
-              buildCommentTest('.sync-test-case', 4)
-            ]} />
+            <TapReactBrowser
+              className="sync-test-case"
+              onComplete={tests => {
+                testResults.syncTest2 = tests;
+                this.setState({testResults});
+              }}
+              tests={[
+                buildCommentTest('.sync-test-case', 1),
+                syncTest1,
+                syncTest2,
+                buildCommentTest('.sync-test-case', 4)
+              ]} />
 
-          <TapReactBrowser
-            onComplete={tests => {
-              testResults.classNameAndLoaderTests = tests;
-              this.setState({testResults});
-            }}
-            className="classy-test-case"
-            noSpinner
-            runAsPromises
-            tests={[
-              buildCommentTest('.classy-test-case', 1),
-              classNameAndLoaderTest,
-              buildCommentTest('.classy-test-case', 3)
-            ]} />
+            <TapReactBrowser
+              onComplete={tests => {
+                testResults.classNameAndLoaderTests = tests;
+                this.setState({testResults});
+              }}
+              className="classy-test-case"
+              noSpinner
+              runAsPromises
+              tests={[
+                buildCommentTest('.classy-test-case', 1),
+                classNameAndLoaderTest,
+                buildCommentTest('.classy-test-case', 3)
+              ]} />
 
-          <TapReactBrowser
-            className="meta-trigger-tester"
-            onComplete={tests => {
-              testResults.metaTriggeredTest = tests;
-              this.setState({testResults});
-            }}
-            tests={[function metaTriggeredTest(t, ref) {
-              const node = document.querySelector('.meta-trigger-tester .tap-react-browser--testing');
-              t.equal(node.innerText.replace(/\n/g, ''),
-                'Testings are waiting to run...COOL DOGS -> 0',
-                'should find the right inner text before the button is clicked');
-              node.querySelector('button').click();
-              waitForSelector('.meta-trigger-tester .tap-react-browser--done')
-              .then(innerNode => {
-                /* eslint-disable max-len */
-                t.equal(
-                  document.querySelector('.meta-trigger-tester .tap-react-browser--done').innerText.replace(/\n/g, ''),
-                  'All done! 1 / 1 tests passedCOOL DOGS -> 1innerTest0PASSEDTHIS SHOULD RUN AFTER A BUTTON IS PRESSED',
-                  'should find the correct inner text');
-                t.end();
-              });
-            }]}>
-            <TestComponentWrapper />
-          </TapReactBrowser>
-        }
+            <TapReactBrowser
+              className="meta-trigger-tester"
+              onComplete={tests => {
+                testResults.metaTriggeredTest = tests;
+                this.setState({testResults});
+              }}
+              tests={[function metaTriggeredTest(t, ref) {
+                const node = document.querySelector('.meta-trigger-tester .tap-react-browser--testing');
+                t.equal(node.innerText.replace(/\n/g, ''),
+                  'Testings are waiting to run...COOL DOGS -> 0',
+                  'should find the right inner text before the button is clicked');
+                node.querySelector('button').click();
+                waitForSelector('.meta-trigger-tester .tap-react-browser--done')
+                .then(innerNode => {
+                  /* eslint-disable max-len */
+                  t.equal(
+                    document.querySelector('.meta-trigger-tester .tap-react-browser--done').innerText.replace(/\n/g, ''),
+                    'All done! 1 / 1 tests passedCOOL DOGS -> 1innerTest0PASSEDTHIS SHOULD RUN AFTER A BUTTON IS PRESSED',
+                    'should find the correct inner text');
+                  t.end();
+                });
+              }]}>
+              <TestComponentWrapper />
+            </TapReactBrowser>
+          }
+          </div>
         </div>
       </div>
     );
