@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom';
 import React, {Component} from 'react';
 import TapReactBrowser from '../src';
 import {testExplanation, examineTestBatch} from './test-utils';
+import TestComponentWrapper from './test-utils/test-component-wrapper';
 
 import {
   testWithPromise,
@@ -11,7 +12,8 @@ import {
 import {
   syncTest1,
   syncTest2,
-  buildCommentTest
+  buildCommentTest,
+  crashyTest
 } from './tests/sync-tests';
 
 function waitForSelector(selector) {
@@ -26,44 +28,9 @@ function waitForSelector(selector) {
   });
 }
 
-class TestComponent extends Component {
-  state = {
-    presses: 0
-  }
-
-  render() {
-    const {presses} = this.state;
-    const {triggerTest} = this.props;
-    return (<button className="test-component" onClick={() => {
-      if (presses > -1) {
-        triggerTest();
-      }
-      this.setState({presses: presses + 1});
-    }}>
-      {`COOL DOGS -> ${presses}`}
-    </button>);
-  }
-}
-
-class TestComponentWrapper extends Component {
-  render() {
-    return (<div style={{border: 'thin solid black'}}>
-      <span>INNER COMPONENT</span>
-      <TapReactBrowser
-        waitForTestTrigger
-        tests={[
-          function innerTest(t) {
-            t.ok(true, 'this should run after a button is pressed');
-            t.end();
-          }
-        ]}>
-        <TestComponent />
-      </TapReactBrowser>
-    </div>);
-  }
-}
-
 const EXPECTED_TEST_SECTIONS = [
+  {expectedFail: 0, key: 'crashTestSync'},
+  {expectedFail: 0, key: 'crashTestAsync'},
   {expectedFail: 0, key: 'promiseTests'},
   {expectedFail: 1, key: 'syncTest1'},
   {expectedFail: 1, key: 'syncTest2'},
@@ -71,9 +38,88 @@ const EXPECTED_TEST_SECTIONS = [
   {expectedFail: 0, key: 'metaTriggeredTest'}
 ];
 
+function testResultSection(testResults) {
+  return (
+    <div className="meta-test test-section">
+      <h3>META TESTS</h3>
+      {
+        Object.keys(testResults).length === EXPECTED_TEST_SECTIONS.length && <TapReactBrowser
+          runAsPromises
+          onComplete={tests => {
+            // put the meta test results somewhere puppeteer can pick them up
+            document.TapReactBrowserTestResults = tests;
+          }}
+          tests={[
+            {
+              name: 'meta test, this test runs after all the other tests',
+              test: t => {
+                EXPECTED_TEST_SECTIONS.forEach(({expectedFail, key}) => {
+                  const results = examineTestBatch(testResults[key]);
+                  t.equal(results.passed + expectedFail, results.total,
+                     `${key} tests should pass`);
+                });
+                t.end();
+              }
+            }
+          ]} />
+      }
+      {
+        Object.keys(testResults).length !== EXPECTED_TEST_SECTIONS.length &&
+        <h4>EXAMPLE TESTS ARE RUNNING</h4>
+      }
+    </div>
+  );
+}
+
+class CrashyTestComponent extends Component {
+  render() {
+    const {sync} = this.props;
+    return (
+      <div style={{border: 'thin solid black'}}>
+        <TapReactBrowser
+          className={`${sync ? 'sync' : 'async'}-crashy-tester`}
+          outputMode="dot"
+          tests={[
+            syncTest1,
+            crashyTest,
+            syncTest2
+          ]} />
+      </div>
+    );
+  }
+}
+
+function crashyTestHarness(sync, onCompleteCallback) {
+  const testClass = `.${sync ? 'sync' : 'async'}-crashy-tester`;
+  return (
+    <TapReactBrowser
+      onComplete={onCompleteCallback}
+      key={sync ? 'sync' : 'async'}
+      tests={[{
+        name: `${sync ? 'Sync' : 'Async'} Crash Test`,
+        test: t => {
+          setTimeout(() => {
+            const node = document.querySelector(`${testClass}.tap-react-browser--testing`);
+            t.equal(node.innerText.replace(/\n/g, ''),
+            'Tests crashed due to errorTypeError: t.nonExistantFunction is not a function...',
+            'should find the right inner text before the button is clicked');
+            const errorNodes = document.querySelectorAll(`${testClass}.tap-react-browser--error`);
+            t.equal([...errorNodes].length, 1, 'should find the correct number of crashed nodes');
+            t.end();
+          }, 1000);
+        }
+      }]}>
+      <CrashyTestComponent sync={sync} />
+    </TapReactBrowser>
+  );
+}
+
 export default class ExampleApp extends Component {
-  state = {
-    testResults: {}
+  constructor() {
+    super();
+    this.state = {
+      testResults: {}
+    };
   }
 
   render() {
@@ -85,38 +131,16 @@ export default class ExampleApp extends Component {
         <div style={{maxWidth: '600px'}}>
           {testExplanation}
         </div>
-        <div className="meta-test test-section">
-          <h3>META TESTS</h3>
-          {
-            Object.keys(testResults).length === EXPECTED_TEST_SECTIONS.length && <TapReactBrowser
-              runAsPromises
-              onComplete={tests => {
-                // put the meta test results somewhere puppet can pick them up
-                document.TapReactBrowserTestResults = tests;
-              }}
-              tests={[
-                {
-                  name: 'meta test, this test runs after all the other tests',
-                  test: t => {
-
-                    EXPECTED_TEST_SECTIONS.forEach(({expectedFail, key}) => {
-                      const results = examineTestBatch(testResults[key]);
-                      t.equal(results.passed + expectedFail, results.total,
-                         `${key} tests should pass`);
-                    });
-                    t.end();
-                  }
-                }
-              ]} />
-          }
-          {
-            Object.keys(testResults).length !== EXPECTED_TEST_SECTIONS.length &&
-            <h4>EXAMPLE TESTS ARE RUNNING</h4>
-          }
-        </div>
+        {testResultSection(testResults)}
         <div className="main-tests-wrapper test-section">
           <h3>EXAMPLE TESTS</h3>
           <div className="main-tests">
+            {
+              [true, false].map(sync => crashyTestHarness(sync, tests => {
+                testResults[sync ? 'crashTestSync' : 'crashTestAsync'] = tests;
+                this.setState({testResults});
+              }))
+            }
             <TapReactBrowser
               runAsPromises
               onComplete={tests => {
@@ -200,7 +224,6 @@ export default class ExampleApp extends Component {
               }]}>
               <TestComponentWrapper />
             </TapReactBrowser>
-          }
           </div>
         </div>
       </div>
