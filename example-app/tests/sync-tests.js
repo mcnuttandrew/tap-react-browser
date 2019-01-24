@@ -28,3 +28,8 @@ export function buildCommentTest(className, testPosition) {
     t.end();
   };
 }
+
+export function crashyTest(t) {
+  t.nonExistantFunction();
+  t.end();
+}

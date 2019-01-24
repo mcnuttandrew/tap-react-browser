@@ -5,39 +5,26 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import TestSection from './test-section';
 import {COMMENT_STRING, KICK_OFF} from './constants';
-import {classnames} from './utils';
-
-// this function takes a single test,
-// which can either be an object containing a key pointing to a test function
-// or a single test function
-function testPromisify(oneTest, i) {
-  return harness => new Promise((resolve, reject) => {
-    harness(oneTest.name || '(anonymous)', t => {
-      const wrapperT = Object.assign({}, t);
-      wrapperT.comment = comment => t.equal(comment, comment, COMMENT_STRING);
-      wrapperT.end = () => {
-        resolve();
-        t.end();
-      };
-      (oneTest.test || oneTest)(wrapperT);
-    });
-  });
-}
-
-// this function takes in a list of functions or objects containing functions
-// (the later being of the form {name, test}) and runs them through testPromisify
-// then promise chains those promises together
-function executePromisesInSequence(tests, harness) {
-  tests.map(testPromisify).reduce((cur, next) => cur.then(next(harness)), Promise.resolve());
-}
+import {classnames, executePromisesInSequence, countPassFail} from './utils';
 
 const Title = styled.div`
- font-size: 24px
+  color: ${props => props.inError ? 'darkorange' : 'black'};
+  font-size: 24px
 `;
 
 const StyledDot = styled.span`
   color: ${props => props.ok ? 'green' : 'red'}
 `;
+
+function getTitleMessage(success, total, done, waiting, errorMsg) {
+  if (errorMsg) {
+    return 'Tests crashed due to error';
+  }
+  if (done) {
+    return `All done! ${success} / ${total} tests passed`;
+  }
+  return waiting ? 'Testings are waiting to run...' : 'Tests are running...';
+}
 
 class TapReactBrowser extends Component {
   constructor(props) {
@@ -69,7 +56,7 @@ class TapReactBrowser extends Component {
     }
 
     this.state = {
-      // TODO add error state
+      errorMsg: false,
       done: false,
       endCount: 0,
       tests: [],
@@ -87,41 +74,34 @@ class TapReactBrowser extends Component {
   }
 
   runTests() {
-    const {harness} = this.state;
+    const {harness, errorMsg} = this.state;
     const {tests, runAsPromises} = this.props;
     if (runAsPromises) {
-      executePromisesInSequence(tests, harness);
+      const errorCallback = error => this.setState({errorMsg: error});
+      executePromisesInSequence(tests, harness, errorCallback);
       return;
     }
 
     tests.forEach((oneTest, i) => {
+      if (errorMsg) {
+        return;
+      }
       harness(oneTest.name || '(anonymous)', t => {
         const wrapperT = Object.assign({}, t);
         wrapperT.comment = comment => t.equal(comment, comment, COMMENT_STRING);
-        (oneTest.test || oneTest)(wrapperT);
+        try {
+          (oneTest.test || oneTest)(wrapperT);
+        } catch (error) {
+          this.setState({errorMsg: error});
+        }
       });
     });
   }
 
   render() {
     const {className, noSpinner, outputMode, children} = this.props;
-    const {done, tests, waiting} = this.state;
-    let success = 0;
-    let total = 0;
-    // group all of the tests into their appropriate sections, while counting the results
-    const sections = tests.reduce((acc, tapLine) => {
-      const {type, ok, test, id} = tapLine;
-      const testSectionId = (type === 'assert' || type === 'end') ? test : id;
-      if (!acc[testSectionId]) {
-        acc[testSectionId] = [];
-      }
-      acc[testSectionId] = (acc[testSectionId] || []).concat(tapLine);
-      if (type === 'assert') {
-        success += (ok ? 1 : 0);
-        total += 1;
-      }
-      return acc;
-    }, {});
+    const {done, tests, waiting, errorMsg} = this.state;
+    const {success, total, sections} = countPassFail(tests);
 
     const passFails = tests.reduce((acc, {ok, type}) => {
       if (type !== 'assert' || name === COMMENT_STRING) {
@@ -136,14 +116,17 @@ class TapReactBrowser extends Component {
           'tap-react-browser': true,
           'tap-react-browser--done': done,
           'tap-react-browser--testing': !done,
+          'tap-react-browser--error': errorMsg,
           [className]: true
         })}>
         <Title
+          inError={Boolean(errorMsg)}
           className="tap-react-browser--global-status">
-          {done ?
-            `All done! ${success} / ${total} tests passed` :
-            waiting ? 'Testings are waiting to run...' : 'Tests are running...'}
+          {getTitleMessage(success, total, done, waiting, errorMsg)}
         </Title>
+        {Boolean(errorMsg) && <div>
+          {errorMsg.toString()}
+        </div>}
         {Boolean(children) && <div className="tap-react-browser--children-container"> {
           React.Children.toArray(children).map((child, key) => {
             return React.cloneElement(child, {
@@ -160,14 +143,16 @@ class TapReactBrowser extends Component {
           })}
         </div>}
         {outputMode === 'dot' && <div className="tap-react-browser--dots-container">{
-          passFails.map((ok, i) => <StyledDot ok={ok} key={`${i}-dot`}>{ok ? '.' : 'X'}</StyledDot>)
+          passFails.map((ok, i) =>
+            <StyledDot ok={ok} key={`${i}-dot`}>{ok ? '.' : 'X'}</StyledDot>
+          )
         }</div>}
         <div className="tap-react-browser--test-wrapper">
           {Object.values(sections).map((section, idx) =>
             <TestSection
               outputMode={outputMode}
               tapOutput={section}
-              noSpinner={noSpinner}
+              noSpinner={Boolean(errorMsg) || noSpinner}
               key={`sestion-${idx}`}/>
           )}
         </div>

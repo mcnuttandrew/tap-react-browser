@@ -12,6 +12,26 @@ const EXPECTED_META_TEST_OUTPUT = [{
 }, {
   id: 0,
   ok: true,
+  name: 'crashTestSync tests should pass',
+  operator: 'equal',
+  objectPrintDepth: 5,
+  actual: 2,
+  expected: 2,
+  test: 0,
+  type: 'assert'
+}, {
+  id: 1,
+  ok: true,
+  name: 'crashTestAsync tests should pass',
+  operator: 'equal',
+  objectPrintDepth: 5,
+  actual: 2,
+  expected: 2,
+  test: 0,
+  type: 'assert'
+}, {
+  id: 2,
+  ok: true,
   name: 'promiseTests tests should pass',
   operator: 'equal',
   objectPrintDepth: 5,
@@ -20,7 +40,7 @@ const EXPECTED_META_TEST_OUTPUT = [{
   test: 0,
   type: 'assert'
 }, {
-  id: 1,
+  id: 3,
   ok: true,
   name: 'syncTest1 tests should pass',
   operator: 'equal',
@@ -30,7 +50,7 @@ const EXPECTED_META_TEST_OUTPUT = [{
   test: 0,
   type: 'assert'
 }, {
-  id: 2,
+  id: 4,
   ok: true,
   name: 'syncTest2 tests should pass',
   operator: 'equal',
@@ -40,7 +60,7 @@ const EXPECTED_META_TEST_OUTPUT = [{
   test: 0,
   type: 'assert'
 }, {
-  id: 3,
+  id: 5,
   ok: true,
   name: 'classNameAndLoaderTests tests should pass',
   operator: 'equal',
@@ -50,7 +70,7 @@ const EXPECTED_META_TEST_OUTPUT = [{
   test: 0,
   type: 'assert'
 }, {
-  id: 4,
+  id: 6,
   ok: true,
   name: 'metaTriggeredTest tests should pass',
   operator: 'equal',
@@ -77,7 +97,11 @@ tape('Meta-testing results', t => {
   .then(() => page.waitForSelector('.meta-test .tap-react-browser--done', {timeout: null, visible: true}))
   .then(res => page.evaluate(() => document.TapReactBrowserTestResults))
   .then(results => {
-    t.deepEqual(results, EXPECTED_META_TEST_OUTPUT, 'should find that all of the meta tests pass');
+    EXPECTED_META_TEST_OUTPUT.forEach((testSection, idx) => {
+      const result = results[idx];
+      const msg = `${result.name || `${result.type} should be placed correctly`}`;
+      t.deepEqual(result, testSection, msg);
+    });
     return;
   })
   .then(() => browser.close())
