@@ -16,6 +16,16 @@ class CrashyTestComponent extends Component {
           outputMode="dot"
           tests={[
             syncTest1,
+            t => {
+              // This message tells the developer that seeing a console error is normal
+              /* eslint-disable no-console */
+              console.log([
+                'You should see a console error right below this.',
+                'It\'s expected! Don\'t worry!! <3'
+              ].join('\n'));
+              /* eslint-enable no-console */
+              t.end();
+            },
             crashyTest,
             syncTest2
           ]} />
