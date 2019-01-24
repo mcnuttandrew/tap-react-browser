@@ -9,7 +9,10 @@
     "build": "NODE_ENV=production && yarn && webpack",
     "build-test": "cd example-app && yarn && webpack && mv dist/bundle.js ./",
     "test": "yarn build-test && babel-node example-app/integration-test-runner.js",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "preversion": "./pre-publish.sh",
+    "version": "git add --a",
+    "postversion": "git push && git push --tags"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
