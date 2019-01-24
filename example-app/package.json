@@ -19,7 +19,6 @@
     "eslint-config-uber-jsx": "^3.0.1",
     "eslint-plugin-babel": "^4.0.0",
     "eslint-plugin-react": "^6.9.0",
-    "extract-text-webpack-plugin": "^2.0.0-beta",
     "react": "^15.5.4",
     "react-addons-test-utils": ">=15.4.2",
     "react-dom": "^15.5.4",
