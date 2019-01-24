@@ -76,8 +76,13 @@ class TapReactBrowser extends Component {
   runTests() {
     const {harness, errorMsg} = this.state;
     const {tests, runAsPromises} = this.props;
+    const errorCallback = error => {
+      /* eslint-disable no-console */
+      console.error(error);
+      /* eslint-enable no-console */
+      this.setState({errorMsg: error});
+    };
     if (runAsPromises) {
-      const errorCallback = error => this.setState({errorMsg: error});
       executePromisesInSequence(tests, harness, errorCallback);
       return;
     }
@@ -92,7 +97,7 @@ class TapReactBrowser extends Component {
         try {
           (oneTest.test || oneTest)(wrapperT);
         } catch (error) {
-          this.setState({errorMsg: error});
+          errorCallback(error);
         }
       });
     });

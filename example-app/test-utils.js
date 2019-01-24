@@ -13,3 +13,15 @@ export function examineTestBatch(testBatch) {
     };
   }, {total: 0, passed: 0});
 }
+
+export function waitForSelector(selector) {
+  return new Promise((resolve, reject) => {
+    const checkExisit = setInterval(() => {
+      const target = document.querySelector(selector);
+      if (target) {
+        clearInterval(checkExisit);
+        resolve(target);
+      }
+    });
+  });
+}
