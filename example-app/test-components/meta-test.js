@@ -24,28 +24,22 @@ class TestComponent extends Component {
   }
 }
 
-class TestComponentWrapper extends Component {
-  render() {
-    return (<div style={{border: 'thin solid black'}}>
-      <span>INNER COMPONENT</span>
-      <TapReactBrowser
-        waitForTestTrigger
-        tests={[
-          function innerTest(t) {
-            t.ok(true, 'this should run after a button is pressed');
-            t.end();
-          }
-        ]}>
-        <TestComponent />
-      </TapReactBrowser>
-    </div>);
-  }
+function TestComponentWrapper() {
+  return (<div style={{border: 'thin solid black'}}>
+    <span>INNER COMPONENT</span>
+    <TapReactBrowser
+      waitForTestTrigger
+      tests={[
+        function innerTest(t) {
+          t.ok(true, 'this should run after a button is pressed');
+          t.end();
+        }
+      ]}>
+      <TestComponent />
+    </TapReactBrowser>
+  </div>);
 }
 
-// onComplete={tests => {
-//   testResults.metaTriggeredTest = tests;
-//   this.setState({testResults});
-// }}
 export default function MetaTest(props) {
   const {onCompleteCallback} = props;
   return (
